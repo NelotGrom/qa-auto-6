@@ -5,6 +5,7 @@ const dashboardPage = require("../fixtures/pages/dashboardPage.json");
 const invitePage = require("../fixtures/pages/invitePage.json");
 const inviteeBoxPage = require("../fixtures/pages/inviteeBoxPage.json");
 const inviteeDashboardPage = require("../fixtures/pages/inviteeDashboardPage.json");
+const confirmWindow = require("../fixtures/pages/windowConfirmationDrow.json")
 import { faker } from "@faker-js/faker";
 
 describe("user can create a box and run it", () => {
@@ -100,6 +101,18 @@ describe("user can create a box and run it", () => {
         expect(text).to.contain("Это — анонимный чат с вашим Тайным Сантой");
       });
     cy.clearCookies();
+  });
+
+  it("creator of the box is able to start the drow", () => {
+    cy.visit("/login");
+    cy.login(users.userAutor.email, users.userAutor.password);
+    cy.get(generalElements.boxesMenu).click();
+    cy.contains(currnetBox).should("exist").click({ force: true }); 
+    cy.contains("Перейти к жеребьевке").should("exist").click(); +  
+    cy.get(generalElements.submitButton).click(); +
+    cy.get(confirmWindow.approveButton).click({ force: true });
+    cy.get('.picture-notice__hint > a > .base--clickable').click();
+    cy.contains("На этой странице показан актуальный список участников со всей информацией.").should("exist");
   });
 
   // Cypress._.times(20, () => {
