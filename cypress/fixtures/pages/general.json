@@ -1,4 +1,7 @@
 {
   "arrowRight": ".btn-arrow-right",
-  "submitButton": ".btn-main"
+  "submitButton": ".btn-main",
+  "boxesMenu": ".layout-1__header-wrapper-fixed [href='/account/boxes'] > .header-item >> .txt--med",
+  "notificationsMenu":":nth-child(2) > .header-item__text",
+  "profileMenu" : "[href='/account']"
 }

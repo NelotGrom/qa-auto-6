@@ -1,4 +1,4 @@
 {
-  "loginField": ":nth-child(3) > .frm",
-  "passwordField": ":nth-child(4) > .frm"
+  "loginField": "div.frm-wrapper:nth-child(3) > input:nth-child(2)",
+  "passwordField": "div.frm-wrapper:nth-child(4) > input:nth-child(2)"
 }
