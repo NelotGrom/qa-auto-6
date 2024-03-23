@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 const users = require("../fixtures/users.json");
 const boxPage = require("../fixtures/pages/boxPage.json");
 const generalElements = require("../fixtures/pages/general.json");
@@ -5,8 +6,8 @@ const dashboardPage = require("../fixtures/pages/dashboardPage.json");
 const invitePage = require("../fixtures/pages/invitePage.json");
 const inviteeBoxPage = require("../fixtures/pages/inviteeBoxPage.json");
 const inviteeDashboardPage = require("../fixtures/pages/inviteeDashboardPage.json");
-const confirmWindow = require("../fixtures/pages/windowConfirmationDrow.json")
-import { faker } from "@faker-js/faker";
+const confirmDrowWindow = require("../fixtures/pages/windowConfirmationDrow.json")
+var boxId = 0;
 
 describe("user can create a box and run it", () => {
   //пользователь 1 логинится
@@ -32,6 +33,14 @@ describe("user can create a box and run it", () => {
     cy.login(users.userAutor.email, users.userAutor.password);
     cy.contains("Создать коробку").click();
     cy.get(boxPage.boxNameField).type(newBoxName);
+
+    cy.get(boxPage.boxIdField)
+      .invoke("val")
+      .then(function (value) {
+        boxId = value;
+        cy.log("Box ID:", boxId); 
+      });
+
     currnetBox = newBoxName;
     cy.get(generalElements.arrowRight).click();
     cy.get(boxPage.sixthIcon).click();
@@ -110,7 +119,7 @@ describe("user can create a box and run it", () => {
     cy.contains(currnetBox).should("exist").click({ force: true }); 
     cy.contains("Перейти к жеребьевке").should("exist").click(); +  
     cy.get(generalElements.submitButton).click(); +
-    cy.get(confirmWindow.approveButton).click({ force: true });
+    cy.get(confirmDrowWindow.approveButton).click({ force: true });
     cy.get('.picture-notice__hint > a > .base--clickable').click();
     cy.contains("На этой странице показан актуальный список участников со всей информацией.").should("exist");
   });
@@ -136,20 +145,17 @@ describe("user can create a box and run it", () => {
   //   });
   // });
 
-  // after("delete box", () => {
-  //   cy.visit("/login");
-  //   cy.login(users.userAutor.email, users.userAutor.password);
-  //   cy.get(
-  //     '.layout-1__header-wrapper-fixed > .layout-1__header > .header > .header__items > .layout-row-start > [href="/account/boxes"] > .header-item > .header-item__text > .txt--med'
-  //   ).click();
-  //   cy.get(":nth-child(1) > a.base--clickable > .user-card").first().click();
-  //   cy.get(
-  //     ".layout-1__header-wrapper-fixed > .layout-1__header-secondary > .header-secondary > .header-secondary__right-item > .toggle-menu-wrapper > .toggle-menu-button > .toggle-menu-button--inner"
-  //   ).click();
-  //   cy.contains("Архивация и удаление").click({ force: true });
-  //   cy.get(":nth-child(2) > .form-page-group__main > .frm-wrapper > .frm").type(
-  //     "Удалить коробку"
-  //   );
-  //   cy.get(".btn-service").click();
-  // });
+  after("delete created box", () => {
+    cy.request({
+      method: 'DELETE',
+      url: `/api/box/${boxId}`,
+      headers: {
+        Cookies:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMwMDE2MzEsImlhdCI6MTcxMTE4ODM0MSwiZXhwIjoxNzExMTk1NTQxfQ.xTvSqUVTsCvxtWBQrvmz7HWk2aW5KbpIgdWO8Yi4Sc0'
+      },
+
+      }).then((response) => {
+      expect(response.status).to.eq(200);
+    })
+  });
 });
