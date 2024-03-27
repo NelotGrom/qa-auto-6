@@ -1,35 +1,32 @@
+import { LoginPage } from "../fixtures/pages/loginPage.js";
+import { GeneralElements } from "../fixtures/pages/general.js";
+import { InviteeBoxPage } from "../fixtures/pages/inviteeBoxPage.js";
 
-const loginPage = require("../fixtures/pages/loginPage.json");
-const generalElements = require("../fixtures/pages/general.json");
-const inviteeBoxPage = require("../fixtures/pages/inviteeBoxPage.json");
+const loginPage = new LoginPage();
+const generalElements = new GeneralElements();
+const inviteeBoxPage = new InviteeBoxPage();
 
 Cypress.Commands.add("login", (userName, password) => {
-  cy.get(loginPage.loginField).type(userName);
-  cy.get(loginPage.passwordField).type(password);
-  cy.get(generalElements.submitButton).click({ force: true });
+  loginPage.elements.loginField().type(userName);
+  loginPage.elements.passwordField().type(password);
+  generalElements.elements.submitButton().click({ force: true });
 });
 
 Cypress.Commands.add("fillMemberCard", (wishText) => {
-  
-    cy.get(generalElements.submitButton).click(); 
-    cy.get(generalElements.arrowRight).click();
-    cy.get(generalElements.arrowRight).click();
-    cy.get(inviteeBoxPage.wishesInput).type(wishText);
-    cy.get(generalElements.arrowRight).click();
+  generalElements.elements.submitButton().click();
+  generalElements.twoClickRight(); 
+  inviteeBoxPage.elements.wishesInput().type(wishText);
+  generalElements.elements.arrowRight().click();
 });
 
-// Cypress.Commands.add("approveUserByLinkInv", (userName,password,wishText,invitingLink) => {
-//     cy.visit(invitingLink);
-//     cy.get(generalElements.submitButton).click();
-//     cy.contains("войдите").click();
-//     cy.get(':nth-child(3) > .frm').type(userName);
-//     cy.get(':nth-child(4) > .frm').type(password);
-//     cy.get(generalElements.submitButton).click();
-//     cy.contains("Создать карточку участника").should("exist");
-//     cy.get(generalElements.submitButton).click();
-//     cy.get(generalElements.arrowRight).click();
-//     cy.get(generalElements.arrowRight).click();
-//     cy.get(inviteeBoxPage.wishesInput).type(wishText);
-//     cy.get(generalElements.arrowRight).click();
-//     cy.clearCookies();
-// });
+Cypress.Commands.add("getFreshCookies", () => {
+  cy.getCookies()
+    .should('exist')
+    .then(cookies => {
+      window.freshCookies = cookies;
+      cookies.forEach(cookie => {
+        cy.log(JSON.stringify(cookie));
+      });
+    });
+});
+

@@ -1,110 +1,79 @@
 import { faker } from "@faker-js/faker";
-const users = require("../fixtures/users.json");
-const boxPage = require("../fixtures/pages/boxPage.json");
-const generalElements = require("../fixtures/pages/general.json");
-const dashboardPage = require("../fixtures/pages/dashboardPage.json");
-const invitePage = require("../fixtures/pages/invitePage.json");
-const inviteeBoxPage = require("../fixtures/pages/inviteeBoxPage.json");
-const inviteeDashboardPage = require("../fixtures/pages/inviteeDashboardPage.json");
-const confirmDrowWindow = require("../fixtures/pages/windowConfirmationDrow.json")
-var boxId = 0;
 
-describe("user can create a box and run it", () => {
-  //пользователь 1 логинится
-  //пользователь 1 создает коробку
-  //пользователь 1 получает приглашение
-  //пользователь 2 переходит по приглашению
-  //пользователь 2 заполняет анкету
-  //пользователь 3 переходит по приглашению
-  //пользователь 3 заполняет анкету
-  //пользователь 4 переходит по приглашению
-  //пользователь 4 заполняет анкету
-  //пользователь 1 логинится
-  //пользователь 1 запускает жеребьевку
+import { BoxPage } from"../fixtures/pages/boxPage";
+import { GeneralElements } from"../fixtures/pages/general";
+import { DashboardPage } from"../fixtures/pages/dashboardPage";
+import { InviteePage } from"../fixtures/pages/invitePage";
+//import { InviteeBoxPage } from"../fixtures/pages/inviteeBoxPage";
+import { InviteeDashboardPage } from"../fixtures/pages/inviteeDashboardPage";
+import { WindowConfirmationDrow } from"../fixtures/pages/windowConfirmationDrow"
+import { LoginPage } from "../fixtures/pages/loginPage";
+
+const users = require("../fixtures/users");
+const boxPage = new BoxPage;
+const generalElements = new GeneralElements;
+const dashboardPage = new DashboardPage;
+const invitePage = new InviteePage;
+//const inviteeBoxPage = new InviteeBoxPage;
+const inviteeDashboardPage = new InviteeDashboardPage;
+const confirmDrowWindow = new WindowConfirmationDrow;
+const loginPage = new LoginPage;
+
+describe("user can create a box, add participants and start the drow", () => {
+
   let newBoxName = faker.word.noun({ length: { min: 5, max: 10 } });
   let wishes = faker.word.noun() + faker.word.adverb() + faker.word.adjective();
   let maxAmount = 50;
   let currency = "Евро";
-  let inviteLink;
   let currnetBox;
+  let freshCookies;
 
   it("user logins and create a box", () => {
-    cy.visit("/login");
-    cy.login(users.userAutor.email, users.userAutor.password);
+    loginPage.signIn(users.userAutor.email, users.userAutor.password);
+    cy.getFreshCookies();
     cy.contains("Создать коробку").click();
-    cy.get(boxPage.boxNameField).type(newBoxName);
-
-    cy.get(boxPage.boxIdField)
-      .invoke("val")
-      .then(function (value) {
-        boxId = value;
-        cy.log("Box ID:", boxId); 
-      });
-
+    boxPage.createNewBox(newBoxName);
     currnetBox = newBoxName;
-    cy.get(generalElements.arrowRight).click();
-    cy.get(boxPage.sixthIcon).click();
-    cy.get(generalElements.arrowRight).click();
-    cy.get(boxPage.giftPriceToggle).click({ force: true });
-    cy.get(boxPage.maxAnount).type(maxAmount);
-    cy.get(boxPage.currency).select(currency);
-    cy.get(generalElements.arrowRight).click();
-    cy.get(generalElements.arrowRight).click();
-    cy.get(generalElements.arrowRight).click();
-    cy.get(dashboardPage.createdBoxName).should("have.text", newBoxName);
+    generalElements.oneClickRight();
+    boxPage.elements.sixthIcon().click();
+    generalElements.oneClickRight();
+    boxPage.setMoneyLimit(maxAmount, currency);
+    generalElements.twoClickRight();
+    dashboardPage.elements.createdBoxName().should("have.text", newBoxName);
     cy.get(".layout-1__header-wrapper-fixed .toggle-menu-item span")
       .invoke("text")
       .then((text) => {
         expect(text).to.include("Участники");
         expect(text).to.include("Моя карточка");
         expect(text).to.include("Подопечный");
-      });
+      })
   });
 
   it("user gets an invitation link for participants", () => {
-    cy.get(generalElements.submitButton).click();
-    cy.get(invitePage.inviteLink)
-      .invoke("text")
-      .then((link) => {
-        inviteLink = link;
-      });
+    generalElements.mainButtonClick();
+    invitePage.getInvLink();
     cy.clearCookies();
   });
 
   it("user can add participants by input form", () => {
-    cy.visit("/login");
-    cy.login(users.userAutor.email,users.userAutor.password);
-    cy.get(generalElements.boxesMenu).click();
+    loginPage.signIn(users.userAutor.email,users.userAutor.password);
+    generalElements.openBoxesDashboard();
     cy.contains(currnetBox).should("exist").click({ force: true }); 
-    cy.contains("Добавить участников").should("exist").click({ force: true }); 
-    cy.get(invitePage.nameFieldDirectInv).eq(0).type(users.user3.name); 
-    cy.get(invitePage.emailFieldDirectInv).eq(1).type(users.user3.email); 
-    cy.get("div.btn-main:nth-child(2)").should("exist").click();
-    cy.get(".tip--green > section:nth-child(2) > div:nth-child(1) > span:nth-child(1)").should("have.text", "Карточки участников успешно созданы и приглашения уже отправляются. Если необходимо, вы можете добавить еще участников.")
+    cy.contains("Добавить участников").should("exist").click({ force: true });     
+    invitePage.inviteByInputForm(users.user3.name, users.user3.email,users.user2.name, users.user2.email);
+    cy.get(".tip--green > section:nth-child(2) > div:nth-child(1) > span:nth-child(1)")
+      .should("have.text", "Карточки участников успешно созданы и приглашения уже отправляются. Если необходимо, вы можете добавить еще участников.")
     cy.clearCookies();
   });
   
   it("user can add participants by invitation link", () => {
     cy.visit(inviteLink); 
-    cy.get(generalElements.submitButton).click(); 
+    generalElements.mainButtonClick(); 
     cy.contains("войдите").click();
-    cy.login(users.user1.email, users.user1.password);  
-    cy.contains("Создать карточку участника").should("exist"); 
+    loginPage.signInByInvLink(users.user1.email, users.user1.password);  
+    cy.contains("Создать карточку участника").should("exist");
     cy.fillMemberCard(wishes);
-    cy.get(inviteeDashboardPage.noticeForInvitee)
-      .invoke("text")
-      .then((text) => {
-        expect(text).to.contain("Это — анонимный чат с вашим Тайным Сантой");
-      });
-    cy.clearCookies();
-
-    cy.visit(inviteLink); 
-    cy.get(generalElements.submitButton).click(); 
-    cy.contains("войдите").click();
-    cy.login(users.user2.email, users.user2.password);  
-    cy.contains("Создать карточку участника").should("exist"); 
-    cy.fillMemberCard(wishes);
-    cy.get(inviteeDashboardPage.noticeForInvitee)
+    inviteeDashboardPage.elements.noticeForInvitee()
       .invoke("text")
       .then((text) => {
         expect(text).to.contain("Это — анонимный чат с вашим Тайным Сантой");
@@ -113,20 +82,21 @@ describe("user can create a box and run it", () => {
   });
 
   it("creator of the box is able to start the drow", () => {
-    cy.visit("/login");
-    cy.login(users.userAutor.email, users.userAutor.password);
-    cy.get(generalElements.boxesMenu).click();
+    loginPage.signIn(users.userAutor.email, users.userAutor.password);
+    generalElements.openBoxesDashboard();
     cy.contains(currnetBox).should("exist").click({ force: true }); 
-    cy.contains("Перейти к жеребьевке").should("exist").click(); +  
-    cy.get(generalElements.submitButton).click(); +
-    cy.get(confirmDrowWindow.approveButton).click({ force: true });
+    cy.contains("Перейти к жеребьевке").should("exist").click(); 
+    generalElements.mainButtonClick();
+    confirmDrowWindow.elements.approveButton().click({ force: true });
     cy.get('.picture-notice__hint > a > .base--clickable').click();
     cy.contains("На этой странице показан актуальный список участников со всей информацией.").should("exist");
   });
 
+  // //ТЕХНИЧЕСКИЙ КОД ДЛЯ УДАЛЕНИЯ БОЛЬШОГО КОЛИЧЕСТВА КОРОБОК.
+  
   // Cypress._.times(20, () => {
   //   describe('Description', () => {
-  //     it('runs 20 times', () => {
+  //     it.only('runs 20 times', () => {
   //       cy.visit("/login");
   //       cy.login(users.userAutor.email, users.userAutor.password);
   //       cy.get(
@@ -148,14 +118,12 @@ describe("user can create a box and run it", () => {
   after("delete created box", () => {
     cy.request({
       method: 'DELETE',
-      url: `/api/box/${boxId}`,
+      url: `/api/box/${window.boxId}`,
       headers: {
-        Cookies:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMwMDE2MzEsImlhdCI6MTcxMTE4ODM0MSwiZXhwIjoxNzExMTk1NTQxfQ.xTvSqUVTsCvxtWBQrvmz7HWk2aW5KbpIgdWO8Yi4Sc0'
+        ...freshCookies
       },
-
       }).then((response) => {
       expect(response.status).to.eq(200);
     })
-  });
-});
+  })
+})

@@ -1,7 +1,0 @@
-{
-  "inviteLink": ":nth-child(2) > .form-page-group__main b",
-  "inviteeFieldEmail": "':nth-child(1) > .frm-wrapper > #input-table-0'", 
-  "inviteeFieldPassword": ".MuiGrid-container > :nth-child(2) > .frm-wrapper > .frm-wrapper__bottom",
-  "nameFieldDirectInv" : "div.input-table div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2 div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6 div.frm-wrapper input#input-table-0.frm",
-  "emailFieldDirectInv" : "div.input-table div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2 div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6 div.frm-wrapper input#input-table-0.frm"
-}
