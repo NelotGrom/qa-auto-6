@@ -6,6 +6,7 @@ export class BoxPage {
     giftPriceToggle: () => cy.get(".switch__toggle"),
     maxAnount: () => cy.get(".MuiGrid-grid-xs-5 .frm"),
     currency: () => cy.get(".MuiGrid-grid-xs-7 .frm"),
+    settingsTitle: () => cy.get('.form-card__header > .txt-h3--semi')
   };
 
   createNewBox (newBoxName) {

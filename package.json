@@ -5,7 +5,8 @@
   "main": "cypress.config.js",
   "scripts": {
     "cy:run": "cypress run",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "cy:run:cloud": "cypress run --record --key b3cf452f-fc5e-4c06-9bec-8d33cd6fb80e"
   },
   "author": "",
   "license": "ISC",

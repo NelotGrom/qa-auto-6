@@ -14,11 +14,6 @@ export class GeneralElements {
   oneClickRight () {
     this.elements.arrowRight().click();
   };
-
-  twoClickRight () {
-    this.elements.arrowRight().click();
-    this.elements.arrowRight().click();
-  };
   
   openBoxesDashboard () {
     this.elements.boxesMenu().click();
