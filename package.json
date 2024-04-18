@@ -6,7 +6,11 @@
   "scripts": {
     "cy:run": "cypress run",
     "cy:open": "cypress open",
-    "cy:run:cloud": "cypress run --record --key b3cf452f-fc5e-4c06-9bec-8d33cd6fb80e"
+    "cy:run:cloud": "npm cypress run --record --key b3cf452f-fc5e-4c06-9bec-8d33cd6fb80e",
+    "cy:run:first": "cypress run --browser chrome -C cypress-13inch-laptop.config.js --spec 'cypress/e2e/copy-santa-box-create.cy.js'",
+    "cy:run:second": "cypress run --browser electron --spec 'cypress/e2e/santa-box-create.cy.js' -C cypress-24inch-desktop.config.js",
+    "cy:run:all": "npm run cy:run:first && npm run cy:run:second",
+    "cy:record:parallel": "npm run cy:run:first -- --group Test1 --ci-build-id 2 --record --key b3cf452f-fc5e-4c06-9bec-8d33cd6fb80e --parallel & npm run cy:run:second -- --group Test2 --ci-build-id 2 --record --key b3cf452f-fc5e-4c06-9bec-8d33cd6fb80e --parallel" 
   },
   "author": "",
   "license": "ISC",
