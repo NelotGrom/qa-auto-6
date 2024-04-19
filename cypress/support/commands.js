@@ -14,7 +14,8 @@ Cypress.Commands.add("login", (userName, password) => {
 
 Cypress.Commands.add("fillMemberCard", (wishText) => {
   generalElements.elements.submitButton().click();
-  generalElements.twoClickRight(); 
+  generalElements.oneClickRight();
+  generalElements.oneClickRight();
   inviteeBoxPage.elements.wishesInput().type(wishText);
   generalElements.elements.arrowRight().click();
 });

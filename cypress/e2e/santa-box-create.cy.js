@@ -62,7 +62,7 @@ describe("user can create a box, add participants and start the drow", () => {
     generalElements.openBoxesDashboard();
     cy.contains(currnetBox).should("exist").click({ force: true }); 
     cy.contains("Добавить участников").should("exist").click({ force: true });     
-    invitePage.inviteByInputForm(users.user3.name, users.user3.email,users.user2.name, users.user2.email);
+    invitePage.inviteByInputForm(users.user3.name, users.user3.email, users.user2.name, users.user2.email);
     cy.get(".tip--green > section:nth-child(2) > div:nth-child(1) > span:nth-child(1)")
       .should("have.text", "Карточки участников успешно созданы и приглашения уже отправляются. Если необходимо, вы можете добавить еще участников.")
     cy.clearCookies();
@@ -72,7 +72,7 @@ describe("user can create a box, add participants and start the drow", () => {
     cy.visit(inviteLink); 
     generalElements.mainButtonClick(); 
     cy.contains("войдите").click();
-    loginPage.signInByInvLink(users.user1.email, users.user1.password);  
+    loginPage.signInByInvLink(users.user1.email, users.user1.password); //с этими кредсами 
     cy.contains("Создать карточку участника").should("exist");
     cy.fillMemberCard(wishes);
     inviteeDashboardPage.elements.noticeForInvitee()
