@@ -81,7 +81,7 @@ Given("user clicks main button", function () {
     generalElements.mainButtonClick();
 });
 
-Given("user can get a invitation link", function () {
+Given("user can get an invitation link", function () {
     invitePage.getInvLink();
     cy.clearCookies();
 });
@@ -91,12 +91,12 @@ Given("user go to current box dashboard page", function () {
     cy.contains(currnetBox).should("exist").click({ force: true }); 
 });
 
-Given("user can add participants with form", function () {
+Given("user can add participants in form from table", function (dataTable) {
     cy.contains("Добавить участников").should("exist").click({ force: true });     
-    invitePage.inviteByInputForm(users.user3.name, users.user3.email, users.user2.name, users.user2.email);
+    invitePage.inviteByInputForm(dataTable.hashes()[0].name, dataTable.hashes()[0].email, dataTable.hashes()[1].name, dataTable.hashes()[1].email);
     cy.get(".tip--green > section:nth-child(2) > div:nth-child(1) > span:nth-child(1)")
       .should("have.text", "Карточки участников успешно созданы и приглашения уже отправляются. Если необходимо, вы можете добавить еще участников.")
-    cy.clearCookies();
+    cy.clearCookies(); 
 });
 
 Given("user use an invitation link", function () {
@@ -107,8 +107,8 @@ Given("user sees Войдите button", function () {
     cy.contains("войдите").click();
 });
 
-Given("inv-user logs in", function () {
-    cy.login(users.user1.email, users.user1.password);
+Given("inv-user logs in with {string} and {string}", function (email, password) {
+    cy.login(email, password);
 });
 
 Given("user create a participants card", function () {
